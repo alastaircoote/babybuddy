@@ -146,9 +146,10 @@ class Feeding(models.Model):
     model_name = 'feeding'
     child = models.ForeignKey(
         'Child', related_name='feeding', on_delete=models.CASCADE)
-    start = models.DateTimeField(blank=False, null=False)
+    start = models.DateTimeField(blank=True, null=False)
     end = models.DateTimeField(blank=False, null=False)
     duration = models.DurationField(null=True, editable=False)
+    duration_in_minutes = models.IntegerField(blank=True)
     type = models.CharField(max_length=255, choices=[
         ('breast milk', 'Breast milk'),
         ('formula', 'Formula'),
@@ -170,6 +171,26 @@ class Feeding(models.Model):
         return 'Feeding'
 
     def save(self, *args, **kwargs):
+
+        if not self.start and not self.duration_in_minutes:
+            raise ValidationError(
+                {'method':
+                 'Must specify either the start time or duration in minutes'},
+                 code='start_or_duration_required'
+            )        
+        
+        if self.start and self.duration_in_minutes:
+            raise ValidationError(
+                {'method':
+                 'Cannot specify both start time and duration in minutes'},
+                 code='only_start_or_duration'
+            )
+        
+        if self.start:
+            self.duration_in_minutes = (self.end - self.start).minutes
+        elif self.duration_in_minutes:
+            self.start = self.end - timedelta(minutes = self.duration_in_minutes)
+
         if self.start and self.end:
             self.duration = self.end - self.start
         super(Feeding, self).save(*args, **kwargs)

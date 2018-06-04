@@ -43,7 +43,7 @@ class FeedingSerializer(CoreModelSerializer):
     class Meta:
         model = models.Feeding
         fields = ('id', 'child', 'start', 'end', 'duration', 'type', 'method',
-                  'amount')
+                  'amount', 'duration_in_minutes')
 
 
 class NoteSerializer(CoreModelSerializer):
