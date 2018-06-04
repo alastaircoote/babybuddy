@@ -105,12 +105,12 @@ class DiaperChangeForm(forms.ModelForm):
 class FeedingForm(forms.ModelForm):
     class Meta:
         model = models.Feeding
-        fields = ['child', 'start','duration_in_minutes', 'end', 'type', 'method', 'amount']
+        fields = ['child', 'duration_in_minutes', 'end', 'type', 'method', 'amount']
         widgets = {
-            'start': forms.DateTimeInput(attrs={
-                'class': 'datetimepicker-input',
-                'data-target': '#datetimepicker_start',
-            }),
+            # 'start': forms.DateTimeInput(attrs={
+            #     'class': 'datetimepicker-input',
+            #     'data-target': '#datetimepicker_start',
+            # }),
             'end': forms.DateTimeInput(attrs={
                 'class': 'datetimepicker-input',
                 'data-target': '#datetimepicker_end',
