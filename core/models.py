@@ -171,21 +171,6 @@ class Feeding(models.Model):
         return 'Feeding'
 
     def save(self, *args, **kwargs):
-
-        if not self.start and not self.duration_in_minutes:
-            raise ValidationError(
-                {'method':
-                 'Must specify either the start time or duration in minutes'},
-                 code='start_or_duration_required'
-            )        
-        
-        if self.start and self.duration_in_minutes:
-            raise ValidationError(
-                {'method':
-                 'Cannot specify both start time and duration in minutes'},
-                 code='only_start_or_duration'
-            )
-        
         if self.start:
             self.duration_in_minutes = (self.end - self.start).minutes
         elif self.duration_in_minutes:
@@ -200,6 +185,20 @@ class Feeding(models.Model):
         validate_time(self.end, 'end')
         validate_duration(self)
         validate_unique_period(Feeding.objects.filter(child=self.child), self)
+
+        if not self.start and not self.duration_in_minutes:
+            raise ValidationError(
+                {'method':
+                 'Must specify either the start time or duration in minutes'},
+                 code='start_or_duration_required'
+            )        
+        
+        if self.start and self.duration_in_minutes:
+            raise ValidationError(
+                {'method':
+                 'Cannot specify both start time and duration in minutes'},
+                 code='only_start_or_duration'
+            )
 
         # "Formula" Type may only be associated with "Bottle" Method.
         if self.type == 'formula'and self.method != 'bottle':
